@@ -5,7 +5,7 @@ import base64
 import numpy as np
 from io import BytesIO
 from PIL import Image
-
+from fastapi.middleware.cors import CORSMiddleware
 
 def base64_to_pil(img_str):
   if "base64," in img_str:
@@ -21,6 +21,17 @@ class Item(BaseModel):
 
 app = FastAPI()
 
+origins = [
+  "http://localhost",
+  "http://localhost:8888",
+]
+
+app.add_middleware(
+  CORSMiddleware,
+  allow_origins=origins,
+  allow_methods=["*"],
+  allow_headers=["*"],
+)
 
 @app.post("/image/")
 async def create_item(item: Item):
@@ -57,5 +68,5 @@ async def create_item(item: Item):
   # 結果画像を保存
   cv2.imwrite("result.jpg",img)
 
-  return "OK"
+  return { 'return': item.name}
 
